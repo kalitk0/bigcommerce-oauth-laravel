@@ -82,13 +82,13 @@ class BigInstallController extends Controller
     {
         $store_has_users = Config::get('bigcommerce-auth.tables.store_has_users');
         if (DB::table($store_has_users)
-            ->where('store_id', $store_id)
+            ->where('shop_id', $store_id)
             ->where('user_id', $user_id)
             ->exists())
             return true;
 
         return DB::table($store_has_users)->insert([
-            'store_id' => $store_id,
+            'shop_id' => $store_id,
             'user_id' => $user_id,
             'created_at' => now(),
             'updated_at' => now(),
@@ -111,8 +111,8 @@ class BigInstallController extends Controller
             return $store;
         }
         return $this->getStoreModelClass()::query()->create([
-            'hash' => $hash,
-            'access_token' => $access_token,
+            'bc_store_hash' => $hash,
+            'bc_access_token' => $access_token,
         ]);
     }
 
