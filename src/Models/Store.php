@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Config;
 class Store extends Model
 {
     protected $fillable = [
-        'hash',
-        'access_token',
+        'bc_store_hash',
+        'bc_access_token',
     ];
 
     public function getTable()
