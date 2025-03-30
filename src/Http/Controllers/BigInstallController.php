@@ -67,7 +67,7 @@ class BigInstallController extends Controller
             if (isset($user->id) && isset($store->id)) {
                 if ($this->assignUserToStore($user->id, $store->id)) {
                     Auth::login($user);
-                    BigCommerceAuth::setStoreHash($store->hash);
+                    BigCommerceAuth::setStoreHash($store->bc_store_hash);
                     BigCommerceAuth::callInstallCallback($user, $store);
                     BigCommerceAuth::callLoadCallback($user, $store);
                     return true;
@@ -103,12 +103,12 @@ class BigInstallController extends Controller
             throw new HttpException(500, 'Store hash does not found in context!');
         }
         $store = $this->getStoreModelClass()::query()
-            ->where('hash', $hash)
+            ->where('bc_store_hash', $hash)
             ->first();
         if ($store) {
-            $store->access_token = $access_token;
+            $store->bc_access_token = $access_token;
             $store->save();
-            return $store;
+            return $store; 
         }
         return $this->getStoreModelClass()::query()->create([
             'bc_store_hash' => $hash,
