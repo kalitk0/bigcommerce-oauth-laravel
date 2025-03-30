@@ -54,7 +54,7 @@ class BigLoadController extends Controller
                     return false;
                 }
                 $store = $this->getStoreModelClass()::query()
-                    ->where('hash', $signed_payload['store_hash'])
+                    ->where('bc_store_hash', $signed_payload['store_hash'])
                     ->first();
                 if (!$store) {
                     return false;
@@ -66,7 +66,7 @@ class BigLoadController extends Controller
             Auth::login($user);
             BigCommerceAuth::setStoreHash($signed_payload['store_hash']);
             $store = $this->getStoreModelClass()::query()
-                ->where('hash', $signed_payload['store_hash'])
+                ->where('bc_store_hash', $signed_payload['store_hash'])
                 ->first();
             BigCommerceAuth::callLoadCallback($user, $store);
             return true;
@@ -89,13 +89,13 @@ class BigLoadController extends Controller
     {
         $store_has_users = Config::get('bigcommerce-auth.tables.store_has_users');
         if (DB::table($store_has_users)
-            ->where('store_id', $store_id)
+            ->where('shop_id', $store_id)
             ->where('user_id', $user_id)
             ->exists())
             return true;
 
         return DB::table($store_has_users)->insert([
-            'store_id' => $store_id,
+            'shop_id' => $store_id,
             'user_id' => $user_id,
         ]);
     }
