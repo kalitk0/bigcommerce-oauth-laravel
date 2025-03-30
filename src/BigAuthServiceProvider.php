@@ -16,9 +16,6 @@ class BigAuthServiceProvider extends PackageServiceProvider
     {
         $package
             ->name('bigcommerce-auth')
-            ->hasMigration('update_users_table')
-            ->hasMigration('create_stores_table')
-            ->hasMigration('create_store_has_users_table')
             ->hasViews()
             ->hasConfigFile();
     }
