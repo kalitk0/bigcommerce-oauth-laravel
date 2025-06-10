@@ -156,8 +156,8 @@ class BigCommerceAuth
         }
 
         $store = Store::query()
-            ->select(['id', 'access_token'])
-            ->where('hash', $store_hash)
+            ->select(['id', 'bc_access_token'])
+            ->where('bc_store_hash', $store_hash)
             ->first();
         if (!$store)
             return false;
@@ -275,7 +275,7 @@ class BigCommerceAuth
     protected function findStore(): Model|Builder
     {
         return (Config::get('bigcommerce-auth.models.store_model', Store::class))::query()
-            ->where('hash', $this->getStoreHash())
+            ->where('bc_store_hash', $this->getStoreHash())
             ->firstOrFail();
     }
 
