@@ -24,7 +24,7 @@ class BigLoadController extends Controller
         $redirect_path = Config::get('bigcommerce-auth.redirect_path', '/');
 
         if ($this->verifyAndLoginUserIfNot($request))
-            return Response::redirectTo($redirect_path);
+            return Response::redirectTo($redirect_path."?signed_payload=".$request->get('signed_payload'));
 
         App::abort(403);
     }
@@ -45,31 +45,23 @@ class BigLoadController extends Controller
     {
         $signed_payload = BigCommerceAuth::verifySignedPayload($request->get('signed_payload'));
         if ($signed_payload) {
-            $user = $this->getUserModelClass()::query()
-                ->where('email', $signed_payload['user']['email'])
+            $store = $this->getStoreModelClass()::query()
+                ->where('bc_store_hash', $signed_payload['store_hash'])->with('user')
                 ->first();
-            if (!$user) {
-                $user = $this->saveUserIfNotExist($signed_payload['user']['email']);
-                if (!$user) {
-                    return false;
+            if (!$store) {
+                return false;
+            }
+            else{
+                if($store->user){
+                    Auth::login($store->user);
+                    BigCommerceAuth::setStoreHash($signed_payload['store_hash']);
+                    BigCommerceAuth::callLoadCallback($store->user, $store);
+                    return true;
                 }
-                $store = $this->getStoreModelClass()::query()
-                    ->where('bc_store_hash', $signed_payload['store_hash'])
-                    ->first();
-                if (!$store) {
-                    return false;
-                }
-                if (!$this->assignUserToStore($user->id, $store->id)) {
+                else{
                     return false;
                 }
             }
-            Auth::login($user);
-            BigCommerceAuth::setStoreHash($signed_payload['store_hash']);
-            $store = $this->getStoreModelClass()::query()
-                ->where('bc_store_hash', $signed_payload['store_hash'])
-                ->first();
-            BigCommerceAuth::callLoadCallback($user, $store);
-            return true;
         }
         return false;
     }
