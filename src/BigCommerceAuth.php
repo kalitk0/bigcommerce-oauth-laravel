@@ -74,7 +74,9 @@ class BigCommerceAuth
     public function install(string $code, string $scope, string $context): array|false
     {
         if (App::isProduction()) {
-            $response = Http::post('https://login.bigcommerce.com/oauth2/token', [
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+            ])->post('https://login.bigcommerce.com/oauth2/token', [
                 'client_id' => $this->getClientId(),
                 'client_secret' => $this->getSecret(),
                 'context' => $context,
@@ -84,7 +86,9 @@ class BigCommerceAuth
                 'scope' => $scope,
             ]);
         } else {
-            $response = Http::withoutVerifying()->post('https://login.bigcommerce.com/oauth2/token', [
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+            ])->withoutVerifying()->post('https://login.bigcommerce.com/oauth2/token', [
                 'client_id' => $this->getClientId(),
                 'client_secret' => $this->getSecret(),
                 'context' => $context,
