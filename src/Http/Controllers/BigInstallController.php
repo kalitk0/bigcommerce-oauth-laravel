@@ -21,16 +21,13 @@ class BigInstallController extends Controller
 {
     public function install(Request $request): \Illuminate\Http\Response|RedirectResponse
     {
-        logger(json_encode($request));
+        
         $this->validatePerms($request);
 		
         $redirect_path = Config::get('bigcommerce-auth.redirect_path', '/');
         $r = $this->saveInformation($request);
         if ($r) {
-        	logger(1);
-            logger(json_encode($r));
-            logger(2);
-            logger(BigCommerceAuth::getStoreHash());
+        	
             if(Auth::user()) {
                 $header = json_encode(['typ' => 'JWT', 'alg' => 'HS256']);
                 $payload = json_encode(['hash' => $r->bc_store_hash]);
@@ -164,8 +161,7 @@ class BigInstallController extends Controller
             'store_hash' => $hash,
         ]);
         $bcstore = Bigcommerce::getStore();
-        logger(json_encode($bcstore));
-        logger(json_encode(Bigcommerce::getLastError()));
+
 
         $store =  $this->getStoreModelClass()::query()->create([
             'bc_store_hash' => $hash,
